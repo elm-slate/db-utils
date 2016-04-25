@@ -1,0 +1,19 @@
+{
+  "name": "@panosoft/slate-db-util",
+  "version": "0.1.0",
+  "description": "",
+  "dependencies": {
+    "co": "^4.6.0",
+    "co-read": "^0.1.1",
+    "is_js": "^0.8.0",
+    "pg": "^4.4.4",
+    "pg-query-stream": "^1.0.0",
+    "ramda": "^0.19.1"
+  },
+  "scripts": {
+    "patch": "npm version patch && git push --follow-tags && npm publish",
+    "minor": "npm version minor && git push --follow-tags && npm publish"
+  },
+  "author": "",
+  "license": "ISC"
+}
