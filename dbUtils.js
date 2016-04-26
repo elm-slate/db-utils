@@ -47,7 +47,7 @@ const dbUtils = {
 		}
 	},
 	createConnectionUrl: connectionParams => {
-		const scheme = 'postgres'
+		const scheme = 'postgres';
 		if (connectionParams.user) {
 			if (connectionParams.password) {
 				return `${scheme}://${connectionParams.user}:${connectionParams.password}@${connectionParams.host}/${connectionParams.databaseName}`;
