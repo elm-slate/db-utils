@@ -1,6 +1,6 @@
 {
   "name": "@panosoft/slate-db-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "dependencies": {
     "co": "^4.6.0",
