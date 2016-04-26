@@ -2,6 +2,7 @@
   "name": "@panosoft/slate-db-utils",
   "version": "0.1.3",
   "description": "",
+  "main": "lib/index.js",
   "repository": "panosoft/slate-db-utils",
   "dependencies": {
     "co": "^4.6.0",
