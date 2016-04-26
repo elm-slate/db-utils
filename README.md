@@ -1,5 +1,5 @@
 # slate-db-utils
-> `Postgresql` database utilities for Slate
+Postgresql database utilities for Slate
 
 Provides `Postgresql` database connection and SQL statement processing functionality for Slate.
 
@@ -18,7 +18,7 @@ Provides `Postgresql` database connection and SQL statement processing functiona
 
 ---
 
-<a href="close"></a>
+<a name="close"></a>
 ### close (client)
 
 Closes a client connection to a `Postgresql` database.
@@ -48,7 +48,7 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 });
 ```
 
-<a href="createClient"></a>
+<a name="createClient"></a>
 ### createClient (conString)
 
 Creates a [`pg`](https://github.com/brianc/node-postgres) Client using a `Postgresql` connection URL string.
@@ -63,7 +63,7 @@ Returns a Promise that is resolved with a [`pg`](https://github.com/brianc/node-
 
 See [`close`](#close).
 
-<a href="createConnectionUrl"></a>
+<a name="createConnectionUrl"></a>
 ### createConnectionUrl (connectionParams)
 
 Creates a `Postgresql` connection URL string from connection parameters.
@@ -83,7 +83,7 @@ Returns a `Postgresql` connection URL string.
 
 See [`close`](#close).
 
-<a href="createPooledClient"></a>
+<a name="createPooledClient"></a>
 ### createPooledClient (conString)
 
 Creates an object containing a `dbClient` property which is a [`pg`](https://github.com/brianc/node-postgres) Client.  The Client object is retrieved from a connection pool built using the supplied `Postgresql` connection URL string.
@@ -115,7 +115,7 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 });
 ```
 
-<a href="createQueryStream"></a>
+<a name="createQueryStream"></a>
 ### createQueryStream (client, statement, prepareStmtParams, options)
 
 Creates a readable stream of rows returned from the input SQL statement.
@@ -177,7 +177,7 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 });
 ```
 
-<a href="executeSQLStatement"></a>
+<a name="executeSQLStatement"></a>
 ### executeSQLStatement (client, statement, prepareStmtParams)
 
 Executes a SQL statement.
@@ -230,7 +230,7 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 });
 ```
 
-<a href="setDefaultOptions"></a>
+<a name="setDefaultOptions"></a>
 ### setDefaultOptions (options)
 
 Sets defaults options for `dbUtils`.
