@@ -15,7 +15,10 @@ Provides `Postgresql` database connection and SQL statement processing functiona
 - [`createQueryStream`](#createQueryStream)
 - [`executeSQLStatement`](#executeSQLStatement)
 - [`setDefaultOptions`](#setDefaultOptions)
+
 ---
+
+<a href="close"></a>
 ### close (client)
 
 Closes a client connection to a `Postgresql` database.
@@ -28,7 +31,7 @@ Closes a client connection to a `Postgresql` database.
 
 ``` javascript
 const co = require('co');
-const dbUtils = require('@panosoft/slate-db-utils/dbUtils');
+const dbUtils = require('@panosoft/slate-db-utils');
 
 const example = co.wrap(function *(connectionParams) {
   const dbClient = yield dbUtils.createClient(dbUtils.createConnectionUrl(connectionParams));
@@ -45,6 +48,7 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 });
 ```
 
+<a href="createClient"></a>
 ### createClient (conString)
 
 Creates a [`pg`](https://github.com/brianc/node-postgres) Client using a `Postgresql` connection URL string.
@@ -59,6 +63,7 @@ Returns a Promise that is resolved with a [`pg`](https://github.com/brianc/node-
 
 See [`close`](#close).
 
+<a href="createConnectionUrl"></a>
 ### createConnectionUrl (connectionParams)
 
 Creates a `Postgresql` connection URL string from connection parameters.
@@ -78,6 +83,7 @@ Returns a `Postgresql` connection URL string.
 
 See [`close`](#close).
 
+<a href="createPooledClient"></a>
 ### createPooledClient (conString)
 
 Creates an object containing a `dbClient` property which is a [`pg`](https://github.com/brianc/node-postgres) Client.  The Client object is retrieved from a connection pool built using the supplied `Postgresql` connection URL string.
@@ -92,7 +98,7 @@ Returns a Promise that is resolved with an object containing a [`pg`](https://gi
 
 ``` javascript
 const co = require('co');
-const dbUtils = require('@panosoft/slate-db-utils/dbUtils');
+const dbUtils = require('@panosoft/slate-db-utils');
 
 const example = co.wrap(function *(connectionParams) {
   const pooledClient = yield dbUtils.createPooledClient(dbUtils.createConnectionUrl(connectionParams));
@@ -109,6 +115,7 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 });
 ```
 
+<a href="createQueryStream"></a>
 ### createQueryStream (client, statement, prepareStmtParams, options)
 
 Creates a readable stream of rows returned from the input SQL statement.
@@ -129,7 +136,7 @@ Returns a readable stream of rows.
 ``` javascript
 const co = require('co');
 const coread = require('co-read');
-const dbUtils = require('@panosoft/slate-db-utils/dbUtils');
+const dbUtils = require('@panosoft/slate-db-utils');
 
 const getRowsFromStream = co.wrap(function *(rowStream) {
   var rows = [];
@@ -170,6 +177,7 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 });
 ```
 
+<a href="executeSQLStatement"></a>
 ### executeSQLStatement (client, statement, prepareStmtParams)
 
 Executes a SQL statement.
@@ -186,7 +194,7 @@ Returns a Promise that is resolved with a [`pg`](https://github.com/brianc/node-
 
 ``` javascript
 const co = require('co');
-const dbUtils = require('@panosoft/slate-db-utils/dbUtils');
+const dbUtils = require('@panosoft/slate-db-utils');
 
 const exampleForClient = co.wrap(function *(connectionParams) {
   const dbClient = yield dbUtils.createClient(dbUtils.createConnectionUrl(connectionParams));
@@ -222,6 +230,7 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 });
 ```
 
+<a href="setDefaultOptions"></a>
 ### setDefaultOptions (options)
 
 Sets defaults options for `dbUtils`.
@@ -238,7 +247,7 @@ Sets defaults options for `dbUtils`.
 
  ``` javascript
 const co = require('co');
-const dbUtils = require('@panosoft/slate-db-utils/dbUtils');
+const dbUtils = require('@panosoft/slate-db-utils');
 
 const example = co.wrap(function *(options) {
   dbUtils.setDefaultOptions(options);
