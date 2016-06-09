@@ -1,10 +1,10 @@
 {
   "name": "@panosoft/slate-db-utils",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "",
   "main": "lib/index.js",
   "repository": "panosoft/slate-db-utils",
-  "license": "Unlicense",
+  "license": "ISC",
   "dependencies": {
     "co": "^4.6.0",
     "is_js": "^0.8.0",
@@ -16,6 +16,5 @@
     "patch": "npm version patch && git push --follow-tags && npm publish",
     "minor": "npm version minor && git push --follow-tags && npm publish"
   },
-  "author": "",
-  "license": "ISC"
+  "author": ""
 }
