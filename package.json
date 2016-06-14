@@ -7,6 +7,7 @@
   "license": "ISC",
   "dependencies": {
     "co": "^4.6.0",
+    "crc-32": "^0.4.0",
     "is_js": "^0.8.0",
     "pg": "^4.4.4",
     "pg-query-stream": "^1.0.0",
