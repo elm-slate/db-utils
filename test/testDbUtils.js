@@ -8,12 +8,12 @@ const uuid = require('node-uuid');
 const program = require('commander');
 const dbUtils = require('../lib/index.js');
 
-const exit = exitCode => setTimeout(() => process.exit(exitCode), 1000);
-
 const logger = bunyan.createLogger({
 	name: 'testDbUtils',
 	serializers: bunyan.stdSerializers
 });
+
+const exit = exitCode => setTimeout(() => process.exit(exitCode), 1000);
 
 process.on('uncaughtException', err => {
 	logger.error({err: err}, `Uncaught exception:`);
@@ -41,6 +41,8 @@ const validateArguments = arguments => {
 	var errors = [];
 	if (!arguments.configFilename || is.not.string(arguments.configFilename))
 		errors = R.append('config-filename is invalid:  ' + arguments.configFilename, errors);
+	if (arguments.args.length > 0)
+		errors = R.append(`Some command arguments exist after processing command options.  There may be command options after " -- " in the command line.  Unprocessed Command Arguments:  ${program.args}`, errors);
 	return errors;
 };
 
