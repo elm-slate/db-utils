@@ -28,7 +28,7 @@ Closes a client connection to a `Postgresql` database created with either `creat
 
 #### Arguments
 
-- `client` - The object returned from calling [`createClient`](#createClient) or the `dbClient` property of the object returned from calling [`createPooledClient`](#createPooledClient).
+- `client` - The object returned from calling [`createClient`](#createClient) or [`createPooledClient`](#createPooledClient).
 - `err` - optional parameter for clients created with `createPooledClient`.
   - if the parameter is missing or `falsy`, then client connection will be destroyed and not returned to the connection pool.
   - if the parameter is `truthy` the client connection will be returned to the connection pool.
@@ -359,7 +359,7 @@ Sets defaults options for `dbUtils`.
 #### Arguments
 
 - `options` - An options object containing logger, highWaterMark, batchSize and/or connectTimeout properties.
- - `logger` - A logger that supports an error function, e.g. [`bunyan`](https://github.com/trentm/node-bunyan).  Default is no log message generated if dbUtils detects an error.
+ - `logger` - A logger that supports `info` and `error` functions, e.g. [`bunyan`](https://github.com/trentm/node-bunyan).  Default is no log message generated if dbUtils detects an error or has an info message to display.
  - `highWaterMark` - Same as in `options` parameter in [`createQueryStream`](#createQueryStream).
  - `batchSize` - Same as in `options` parameter in [`createQueryStream`](#createQueryStream).
  - `connectTimeout` - Same as in `connectionParams` parameter in [`createConnectionUrl`](#createConnectionUrl).
