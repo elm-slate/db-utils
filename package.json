@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "repository": "panosoft/slate-db-utils",
-  "license": "ISC",
+  "license": "Unlicense",
   "dependencies": {
     "co": "^4.6.0",
     "crc-32": "^0.4.0",
@@ -19,6 +19,7 @@
   },
   "author": "",
   "devDependencies": {
+    "bunyan": "^1.8.1",
     "commander": "^2.9.0",
     "node-uuid": "^1.4.7"
   }
