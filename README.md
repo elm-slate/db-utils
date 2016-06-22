@@ -258,14 +258,14 @@ example({host: 'exampleHost', databaseName: 'exampleDbname', user: 'exampleUser'
 ```
 
 <a name="lockEntities"></a>
-### lockEntities (client, entities)
+### lockEntities (client, entityIds)
 
-Creates a transaction and locks uuid entities with Postgresql advisory transaction locks derived from the uuid entities.
+Creates a transaction and exclusively locks entities from access by other cooperative parties using Postgresql advisory transaction locks derived from each entity's uuid. Cooperative parties are also using this function before writing to the Event Source database. Slate requires that all writes first use this function.
 
 #### Arguments
 
 - `client` - A [`pg`](https://github.com/brianc/node-postgres) Client.
-- `entities` - An array of uuid entities to lock.
+- `entityIds` - An array of uuids of the entities to lock.
 
 #### Example
 
@@ -281,7 +281,7 @@ const close = (client, err) => {
   catch (err) {
     console.error(err.stack || err.message);
   }
-}
+};
 const exampleForClient = co.wrap(function *(connectionParams) {
   let dbClient;
   try {
