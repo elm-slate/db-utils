@@ -6,6 +6,7 @@ const is = require('is_js');
 const CRC32 = require('crc-32');
 const uuid = require('node-uuid');
 const program = require('commander');
+const cRu = require('@panosoft/co-ramda-utils');
 const dbUtils = require('../lib/index.js');
 
 const logger = bunyan.createLogger({
@@ -125,11 +126,11 @@ const maxUIntValue = Math.pow(2, 32);
 // convert int to Postgres OID
 const intToOid = int => int < 0 ? maxUIntValue + int : int;
 
-const displayEntityCRCs = (entities, pid) => {
-	logger.info(R.map(entity => {
-		const high = CRC32.str(entity);
-		const low = CRC32.str(R.reverse(entity));
-		return {entity: entity, connectionPid: pid, CRCs:  {high: high, low: low}, OIDs: {high: intToOid(high), low: intToOid(low)}}}, entities));
+const displayEntityCRCs = (entityIds, pid) => {
+	logger.info(R.map(entityId => {
+		const high = CRC32.str(entityId);
+		const low = CRC32.str(R.reverse(entityId));
+		return {entityId: entityId, connectionPid: pid, CRCs:  {high: high, low: low}, OIDs: {high: intToOid(high), low: intToOid(low)}}}, entityIds));
 };
 
 const displayLockStatus = co.wrap(function *(client) {
@@ -153,45 +154,46 @@ const displayLockStatus = co.wrap(function *(client) {
 
 const createTestClient = co.wrap(function *(connectionUrl, entitiesTest) {
 	const client = yield dbUtils.createPooledClient(connectionUrl);
-	client.entities = entitiesTest.entities;
-	client.testResult = entitiesTest.shouldSucceed === true ? 'succeed' : 'FAIL';
-	logger.info(`client connection ${client.dbClient.processID} created for database ${client.dbClient.database}.  get locks attempt should ${client.testResult} for this client`);
+	client.__slateEntityIds = entitiesTest.entityIds;
+	client.__slateTestResult = entitiesTest.shouldSucceed === true ? 'succeed' : 'FAIL';
+	logger.info(`client connection ${client.dbClient.processID} created for database ${client.dbClient.database}.  get locks attempt should ${client.__slateTestResult} for this client`);
 	return client;
 });
 
 const createTestClients = co.wrap(function *(connectionUrl, entitiesList) {
 	logger.info(`opening test connections`);
 	const clients = [];
-	for (var i = 0; i < entitiesList.length; i++) {
-		clients[clients.length] = yield createTestClient(connectionUrl, entitiesList[i]);
-	}
+	yield cRu.forEachG(function *(entitiesTest) {
+		clients[clients.length] = yield createTestClient(connectionUrl, entitiesTest);
+	}, entitiesList);
 	return clients;
 });
 
 const lockEntities = co.wrap(function *(client, displayClient) {
 	try {
-		const success = yield dbUtils.lockEntities(client.dbClient, client.entities);
-		logger.info(`client connection ${client.dbClient.processID} should ${client.testResult} getting locks for Entities ****  "${R.join('", "', client.entities)}"  ****`);
+		logger.info(`client connection ${client.dbClient.processID} should ${client.__slateTestResult} getting locks for entityIds ****  "${R.join('", "', client.__slateEntityIds)}"  ****`);
+		const success = yield dbUtils.lockEntities(client.dbClient, client.__slateEntityIds);
 		if (success)
-			logger.info(`client connection ${client.dbClient.processID} succeeded getting locks for Entities ****       "${R.join('", "', client.entities)}"  ****`);
+			logger.info(`client connection ${client.dbClient.processID} succeeded getting locks for entityIds ****       "${R.join('", "', client.__slateEntityIds)}"  ****`);
 		else
-			logger.error(`client connection ${client.dbClient.processID} FAILED to get locks for Entities ****         "${R.join('", "', client.entities)}"  ****`);
-		displayEntityCRCs(client.entities, client.dbClient.processID);
+			logger.error(`client connection ${client.dbClient.processID} FAILED to get locks for entityIds ****         "${R.join('", "', client.__slateEntityIds)}"  ****`);
+		displayEntityCRCs(client.__slateEntityIds, client.dbClient.processID);
 		yield displayLockStatus(displayClient);
 		return {success: success, client: client};
 	}
 	catch (err) {
 		logger.error(err, `lockEntities failed for client connection ${client.dbClient.processID}`);
 		dbUtils.close(client, err);
-		throw err;
+		yield displayLockStatus(displayClient);
+		return {success: false, client: client};
 	}
 });
 
 const lockEntitiesForClients = co.wrap(function *(clients, displayClient) {
 	const results = [];
-	for (var i = 0; i < clients.length; i++) {
-		results[results.length] = yield lockEntities(clients[i], displayClient);
-	}
+	yield cRu.forEachG(function *(client) {
+		results[results.length] = yield lockEntities(client, displayClient);
+	}, clients);
 	return results;
 });
 
@@ -203,34 +205,36 @@ const main = co.wrap(function *(connectionUrl, connectTimeout) {
 		displayClient = yield dbUtils.createClient(connectionUrl);
 		logger.info(`Display Connection process id:  ${displayClient.processID}`);
 		yield displayLockStatus(displayClient);
-		// create uuid entities and expected outcome for each lock attempt in the test
+		// create uuid entityIds and expected outcome for each lock attempt in the test
 		const uuids = [uuid.v4(), uuid.v4(), uuid.v4(), uuid.v4(), uuid.v4(), uuid.v4(), uuid.v4()];
-		// create uuid entity GROUPs to use in the test.  each element in the array below contains a GROUP of uuid entities to passed to dbUtils.lockEntities in one call.
-		// each call to dbUtils.lockEntities is made on a different test connection so some calls can fail to get advisory transaction locks on the uuid entities if
-		// they have already been locked by a previous call on a different connection.  The calls are done on different connections in the order the uuid entity GROUPs
-		// are in the array below.
+		// create test GROUPs to use in the testing.  each element in the array below contains a GROUP of uuid entityIds to be passed to dbUtils.lockEntities in one call
+		// along with the expect outcome of the call.  each call to dbUtils.lockEntities is made on a different test connection so some calls can fail to get
+		// advisory transaction locks on the uuid entityIds if  they have already been locked by a previous call on a different connection.  The calls are done on
+		// different connections in the order the test GROUPs are in the array below (e.g. element 0, 1, 2...).
 		const entitiesList = [
-			// GROUP 0.  lockEntities request for these entities should succeed
-			{ entities: [ uuids[0], uuids[1] ], shouldSucceed: true},
-			// GROUP 1.  lockEntities request for these entities should succeed
-			{ entities: [ uuids[2] ], shouldSucceed: true},
-			// GROUP 2.  lockEntities request for these entities should FAIL since at least one of the entities will have been previously locked on
-			// a call to lockEntities using another connection (GROUPs 0 and 1)
-			{ entities: [ uuids[1], uuids[2] ], shouldSucceed: false},
-			// GROUP 3.  lockEntities request for these entities should succeed
-			{ entities: [ uuids[3], uuids[4], uuids[5] ], shouldSucceed: true},
-			// GROUP 4.  lockEntities request for these entities should FAIL since at least one of the entities will have been previously locked on
-			// a call to lockEntities using another connection (GROUP 3)
-			{ entities: [ uuids[6], uuids[4] ], shouldSucceed: false}
+			// GROUP 0.  lockEntities request for these entityIds should succeed
+			{ entityIds: [ uuids[0], uuids[1] ], shouldSucceed: true},
+			// GROUP 1.  lockEntities request for these entityIds should succeed
+			{ entityIds: [ uuids[2] ], shouldSucceed: true},
+			// GROUP 2.  lockEntities request for these entityIds should FAIL since at least one of the entityIds will have already been locked by
+			// a call to lockEntities in a previous connection (GROUPs 0 and 1)
+			{ entityIds: [ uuids[1], uuids[2] ], shouldSucceed: false},
+			// GROUP 3.  lockEntities request for these entityIds should succeed
+			{ entityIds: [ uuids[3], uuids[4], uuids[5] ], shouldSucceed: true},
+			// GROUP 4.  lockEntities request for these entityIds should FAIL since at least one of the entityIds will have already been locked by
+			// a call to lockEntities in a previous connection (GROUP 3)
+			{ entityIds: [ uuids[6], uuids[4] ], shouldSucceed: false},
+			// GROUP 5.  lockEntities request for these entityIds should FAIL and throw an Error since no entityIds exist
+			{ entityIds: [], shouldSucceed: false}
 		];
 		clients = yield createTestClients(connectionUrl, entitiesList);
 		const results = yield lockEntitiesForClients(clients, displayClient);
-		for (var i = 0; i < results.length; i++) {
-			if (results[i].success) {
-				logger.info(`issuing COMMIT fpr client connection ${results[i].client.dbClient.processID}`);
-				yield dbUtils.commit(results[i].client.dbClient);
+		yield cRu.forEachG(function *(result) {
+			if (result.success) {
+				logger.info(`issuing COMMIT fpr client connection ${result.client.dbClient.processID}`);
+				yield dbUtils.commit(result.client.dbClient);
 			}
-		}
+		}, results);
 		logger.info('COMMITs complete');
 		yield displayLockStatus(displayClient);
 	}
