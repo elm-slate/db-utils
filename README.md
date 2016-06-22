@@ -11,7 +11,7 @@ Provides `Postgresql` database connection and SQL statement processing functiona
 - [`close`](#close)
 - [`createClient`](#createClient)
 - [`commit`](#commit)
-- [`createConnectionUrl`](#connectionParams)
+- [`createConnectionUrl`](#createConnectionUrl)
 - [`createPooledClient`](#createPooledClient)
 - [`createQueryStream`](#createQueryStream)
 - [`executeSQLStatement`](#executeSQLStatement)
