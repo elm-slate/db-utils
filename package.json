@@ -1,5 +1,5 @@
 {
-  "name": "elm-slate/db-utils",
+  "name": "@elm-slate/db-utils",
   "version": "0.1.8",
   "description": "",
   "main": "lib/index.js",
