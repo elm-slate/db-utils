@@ -10,7 +10,7 @@ To include the latest version of db-utils in your program use:
 
 ```json
   "dependencies": {
-    "elm-slate/db-utils": "git://github.com/elm-slate/db-utils.git",
+    "@elm-slate/db-utils": "git://github.com/elm-slate/db-utils.git",
   }
 ```
 
@@ -18,7 +18,7 @@ To use a specific version:
 
 ```json
   "dependencies": {
-    "elm-slate/db-utils": "git://github.com/elm-slate/db-utils.git#0.1.9",
+    "@elm-slate/db-utils": "git://github.com/elm-slate/db-utils.git#0.1.9",
   }
 ```
 
@@ -55,7 +55,7 @@ Closes a client connection to a `Postgresql` database created with either `creat
 
 ``` javascript
 const co = require('co');
-const dbUtils = require('elm-slate/db-utils');
+const dbUtils = require('@elm-slate/db-utils');
 
 const exampleForClient = co.wrap(function *(connectionParams) {
   const dbClient = yield dbUtils.createClient(dbUtils.createConnectionUrl(connectionParams));
@@ -178,7 +178,7 @@ Returns a readable stream of rows.
 ``` javascript
 const co = require('co');
 const coread = require('co-read');
-const dbUtils = require('elm-slate/db-utils');
+const dbUtils = require('@elm-slate/db-utils');
 
 const getRowsFromStream = co.wrap(function *(rowStream) {
   var rows = [];
@@ -236,7 +236,7 @@ Returns a Promise that is resolved with a [`pg`](https://github.com/brianc/node-
 
 ``` javascript
 const co = require('co');
-const dbUtils = require('elm-slate/db-utils');
+const dbUtils = require('@elm-slate/db-utils');
 
 const exampleForClient = co.wrap(function *(connectionParams) {
   const dbClient = yield dbUtils.createClient(dbUtils.createConnectionUrl(connectionParams));
@@ -287,7 +287,7 @@ Creates a transaction and exclusively locks entities from access by other cooper
 
 ``` javascript
 const co = require('co');
-const dbUtils = require('elm-slate/db-utils');
+const dbUtils = require('@elm-slate/db-utils');
 
 const close = (client, err) => {
   try {
@@ -384,7 +384,7 @@ Sets defaults options for `dbUtils`.
 
  ``` javascript
 const co = require('co');
-const dbUtils = require('elm-slate/db-utils');
+const dbUtils = require('@elm-slate/db-utils');
 
 const example = co.wrap(function *(options) {
   dbUtils.setDefaultOptions(options);
